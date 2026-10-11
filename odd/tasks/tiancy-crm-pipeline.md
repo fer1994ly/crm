@@ -39,6 +39,8 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 - [x] T4 Client creation slice: form with required-field validation — route: delegated
 - [x] T5 Admin slice: password gate, contacts list, reset demo data — route: delegated
 - [x] T6 README, final checks (lint, unit, integration, E2E, build), push to origin/main — route: inline
+- [x] T7 Validate stored client shape on load (drop/reseed invalid records) — review follow-up R3-stored-shape-validation, user-authorized — route: delegated
+- [x] T8 Guard ClientDetailPage handlers and show errors in a status region — review follow-up R3-detail-handlers-unguarded, user-authorized — route: delegated
 
 ## Acceptance criteria
 - Move a contact to the next stage without reload.
@@ -57,6 +59,9 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 - T5: RED: adminAuth.test.ts, resetDemoData.test.ts, AdminPage.test.tsx failed on missing modules. GREEN: 70 unit/integration tests pass (password gate renders no contacts and never reads the repository before unlock; wrong password; sessionStorage unlock; lock; reset with in-page alertdialog confirm/cancel). E2E 34/34 pass. Password constant lives in src/features/admin/domain/config.ts.
 
 - T6 (partial): README added, commit 0526aff. Parent spot check: npm test 70/70, lint clean, build OK (88.09 kB gzip main), e2e 34/34, console grep empty. RDD assess (base 32f2382, committed-only): medium, review_due=true (slice_budget_reached). User granted; lens review-reliability approved, acknowledged, authority burned (lineage review-f787658da3208c43). Advisory non-blocking follow-ups: R3-stored-shape-validation, R3-detail-handlers-unguarded (WARNING); R3-detail-stale-on-param-change, R3-timeline-comparator, R3-e2e-misnamed-test (SUGGESTION). Pushed to origin/main.
+
+- T7: RED: clientValidation.test.ts failed on missing module; stage.test.ts "throws instead of mapping an unknown stage to the first one" failed; repository tests "drops invalid records, keeps valid ones, and persists the cleaned list" and "reseeds when every stored record is invalid" failed. GREEN after pure `isValidClient` (domain/clientValidation.ts), repository filtering, and `nextStage` throwing on unknown stages. Policy: non-list or unparseable value -> reseed; list with some invalid records -> drop them and persist the cleaned list; non-empty list with no valid record -> reseed; empty list stays empty. E2E (stored-data.spec.ts, written after the fix, no separate RED run) passes on mobile+desktop. Commit 3241ada.
+- T8: RED: 3 ClientDetailPage tests (advance, add note, simulated contact after the client is removed from storage) failed with no role="alert" element and an uncaught "El cliente no existe." GREEN after handlers go through a guarded `run` that shows the message in a role="alert" region and swaps to the "Cliente no disponible" view with a "Volver al tablero" link when the client vanished. E2E added to client-detail.spec.ts.
 
 ## Next step
 Connect the repo in Netlify; optionally address the advisory review follow-ups.
