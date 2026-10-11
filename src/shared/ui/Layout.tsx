@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { AccountMenu } from '../../features/access/ui/AccountMenu'
 
@@ -61,7 +61,15 @@ export function Layout() {
             {notice}
           </p>
         )}
-        <Outlet key={dataVersion} />
+        <Suspense
+          fallback={
+            <p role="status" className="min-h-[60dvh] text-sm text-muted">
+              Cargando…
+            </p>
+          }
+        >
+          <Outlet key={dataVersion} />
+        </Suspense>
       </main>
       <footer className="border-t border-line px-4 py-4 text-center text-xs text-muted">
         Tiancy Médica · Equipo médico para instituciones de salud · Costa Rica

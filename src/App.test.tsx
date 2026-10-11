@@ -10,8 +10,8 @@ describe('App shell', () => {
         <App />
       </MemoryRouter>,
     )
-    expect(screen.getByText('Tiancy Médica')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Nuevo cliente' })).toHaveAttribute('href', '/clientes/nuevo')
+    expect(await screen.findByText('Tiancy Médica')).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'Nuevo cliente' })).toHaveAttribute('href', '/clientes/nuevo')
     expect(screen.queryByRole('link', { name: 'Administración' })).not.toBeInTheDocument()
     expect(await screen.findByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeInTheDocument()
   })
