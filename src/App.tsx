@@ -7,6 +7,10 @@ const ClientDetailPage = lazy(() =>
   import('./features/clients/ui/ClientDetailPage').then((m) => ({ default: m.ClientDetailPage })),
 )
 
+const NewClientPage = lazy(() =>
+  import('./features/clients/ui/NewClientPage').then((m) => ({ default: m.NewClientPage })),
+)
+
 function Loading() {
   return (
     <p role="status" className="text-sm text-muted">
@@ -21,6 +25,7 @@ export function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<PipelineBoardPage />} />
+          <Route path="clientes/nuevo" element={<NewClientPage />} />
           <Route path="clientes/:id" element={<ClientDetailPage />} />
         </Route>
       </Routes>
