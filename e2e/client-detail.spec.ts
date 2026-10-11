@@ -50,6 +50,7 @@ test('opens from the board card link', async ({ page }) => {
 })
 
 test('shows a message and a way back when the client disappears from storage', async ({ page }) => {
+  await expect(page.getByRole('heading', { level: 1, name: /Hospital Metropolitano/ })).toBeVisible()
   await page.evaluate(() => {
     const key = 'tiancy-crm:v1:clients'
     const all = JSON.parse(localStorage.getItem(key)!) as { id: string }[]
