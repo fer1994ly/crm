@@ -25,16 +25,22 @@ npm run dev        # http://localhost:5173
 | `npm test` | Unit and integration tests (Vitest + Testing Library) |
 | `npm run test:e2e` | E2E tests (Playwright, mobile Pixel 7 + desktop). Run `npx playwright install chromium` once first |
 
+## Access screen and demo password
+
+The whole CRM sits behind an access screen: on any route (board, client detail, new client) nothing is shown, and no contact is read from storage, until the access password is entered. After unlocking you land on the page you asked for (deep links work).
+
+- **Demo password**: `tiancy2026`. It is also printed on the login screen ("Clave de demostración").
+- **Where it is configured**: `ACCESS_PASSWORD` in `src/features/access/domain/config.ts` (single constant).
+- **Session**: the unlock lasts for the browser tab (sessionStorage key `tiancy-crm:v1:access-unlocked`). Use **Cuenta → Cerrar sesión** to lock again.
+- **Client-side demo auth**: it only keeps casual viewers out of a prototype and is not real security. The backend integration must replace it with real authentication.
+
 ## Screens
 
+- **Acceso** (any route while locked): password form.
 - **Tablero** (`/`): pipeline by stage. On mobile, stage tabs with counts; on desktop, five columns.
 - **Ficha del cliente** (`/clientes/:id`): data, contact history, add a note, advance stage, simulated contact actions.
 - **Nuevo cliente** (`/clientes/nuevo`): creation form; it does not submit while a required field is missing.
-- **Administración** (`/admin`): asks for the password before showing any contact.
-
-## Admin password (demo)
-
-`tiancy2026` — defined in `src/features/admin/domain/config.ts`. The unlock lasts for the browser tab session (sessionStorage).
+- **Cuenta** (header menu): **Restablecer datos de ejemplo** (with an in-page confirmation) and **Cerrar sesión**.
 
 ## What is simulated
 
@@ -42,13 +48,13 @@ There is no backend and no external service:
 
 - **Data**: stored in the browser `localStorage` under the key `tiancy-crm:v1:clients`. On first load, 12 sample institutional clients are seeded across all stages.
 - **"Enviar cotización por correo" / "Enviar por WhatsApp"**: no message is sent; the action only records a simulated entry in the client's contact history.
-- **Admin authentication**: a client-side demo password, not real security. The backend integration should replace it.
+- **Access control**: a client-side demo password, not real security. The backend integration should replace it.
 
 ## Resetting the sample data
 
 Either:
 
-1. Go to **Administración**, enter the password and use **Restablecer datos de ejemplo**, or
+1. Open the header menu **Cuenta** and choose **Restablecer datos de ejemplo**, then confirm, or
 2. Delete the `tiancy-crm:v1:clients` key from the browser's localStorage (DevTools → Application → Local Storage) and reload.
 
 ## Architecture
@@ -57,7 +63,7 @@ Vertical slices with DDD layers under `src/features/<slice>/{domain,application,
 
 - `pipeline`: stage model, advance rule, board.
 - `clients`: client aggregate, seed data, creation, detail and notes, localStorage repository.
-- `admin`: password gate, contacts list, demo data reset.
+- `access`: password gate, account menu (lock, demo data reset).
 
 `src/shared` holds the storage port/adapters and small helpers; `src/app/repositories.ts` is the composition root. The domain is plain TypeScript; use cases depend on the `ClientRepository` port, so a backend adapter can replace the localStorage one.
 
