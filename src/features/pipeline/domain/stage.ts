@@ -18,6 +18,7 @@ export const STAGE_LABELS: Record<StageId, string> = {
 
 export function nextStage(stage: StageId): StageId | null {
   const index = STAGES.indexOf(stage)
+  if (index === -1) throw new Error(`Etapa desconocida: ${String(stage)}`)
   return STAGES[index + 1] ?? null
 }
 

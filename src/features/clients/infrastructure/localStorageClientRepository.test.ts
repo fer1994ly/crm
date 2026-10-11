@@ -45,3 +45,40 @@ describe('localStorage client repository', () => {
     expect(repo.list()).toHaveLength(12)
   })
 })
+
+describe('localStorage client repository: stored shape validation', () => {
+  const seed = createSeedClients()
+  const custom = { ...seed[0], id: 'custom-1', institution: 'Clínica Propia' }
+
+  it('reseeds when the stored value is not a list', () => {
+    const storage = createMemoryStorage()
+    storage.setItem(CLIENTS_STORAGE_KEY, JSON.stringify({ clients: [] }))
+    expect(createLocalStorageClientRepository(storage).list()).toHaveLength(12)
+  })
+
+  it('drops invalid records, keeps valid ones, and persists the cleaned list', () => {
+    const storage = createMemoryStorage()
+    const broken = [
+      custom,
+      { ...seed[1], id: 'bad-history', history: [] },
+      { ...seed[2], id: 'bad-stage', stage: 'archivado' },
+      { id: 'bad-fields' },
+    ]
+    storage.setItem(CLIENTS_STORAGE_KEY, JSON.stringify(broken))
+    const repo = createLocalStorageClientRepository(storage)
+    expect(repo.list().map((c) => c.id)).toEqual(['custom-1'])
+    expect(JSON.parse(storage.getItem(CLIENTS_STORAGE_KEY)!).map((c: { id: string }) => c.id)).toEqual(['custom-1'])
+  })
+
+  it('reseeds when every stored record is invalid', () => {
+    const storage = createMemoryStorage()
+    storage.setItem(CLIENTS_STORAGE_KEY, JSON.stringify([{ id: 'x', history: [] }]))
+    expect(createLocalStorageClientRepository(storage).list()).toHaveLength(12)
+  })
+
+  it('keeps an intentionally empty list empty', () => {
+    const storage = createMemoryStorage()
+    storage.setItem(CLIENTS_STORAGE_KEY, '[]')
+    expect(createLocalStorageClientRepository(storage).list()).toEqual([])
+  })
+})

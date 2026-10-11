@@ -24,3 +24,9 @@ describe('pipeline stages', () => {
     expect(isClosedStage('negociacion')).toBe(false)
   })
 })
+
+describe('nextStage with unknown input', () => {
+  it('throws instead of mapping an unknown stage to the first one', () => {
+    expect(() => nextStage('archivado' as never)).toThrow(/etapa/i)
+  })
+})
