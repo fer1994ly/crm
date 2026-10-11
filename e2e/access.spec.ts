@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { CLIENTS_KEY, expectNoHorizontalOverflow, unlock } from './helpers'
+import { CLIENTS_KEY, expectNoHorizontalOverflow, openAccountMenu, unlock } from './helpers'
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/')
@@ -51,6 +51,7 @@ test('unlocking a deep link lands on that client', async ({ page }) => {
 test('logging out returns to the login screen', async ({ page }) => {
   await page.goto('/')
   await unlock(page)
+  await openAccountMenu(page)
   await page.getByRole('button', { name: 'Cerrar sesión' }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Acceso' })).toBeVisible()
   await expect(page.getByText('Clínica Santa Lucía')).toHaveCount(0)

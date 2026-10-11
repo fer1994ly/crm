@@ -73,11 +73,12 @@ describe('AccessGate', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeInTheDocument()
   })
 
-  it('locks again from the header and returns to the login', async () => {
+  it('locks again from the account menu and returns to the login', async () => {
     const user = userEvent.setup()
     renderAt('/')
     await unlock(user)
     await screen.findByRole('heading', { level: 1, name: 'Pipeline comercial' })
+    await user.click(screen.getByRole('button', { name: 'Cuenta' }))
     await user.click(screen.getByRole('button', { name: 'Cerrar sesión' }))
     expect(screen.getByRole('heading', { level: 1, name: 'Acceso' })).toBeInTheDocument()
     expect(screen.queryByText(/Clínica Santa Lucía/)).not.toBeInTheDocument()

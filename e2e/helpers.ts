@@ -32,3 +32,8 @@ export async function resetAndUnlock(page: Page, path = '/') {
   await page.goto(path)
   await unlock(page)
 }
+
+export async function openAccountMenu(page: Page) {
+  await page.getByRole('button', { name: 'Cuenta' }).click()
+  await expect(page.getByRole('button', { name: 'Cerrar sesión' })).toBeVisible()
+}
