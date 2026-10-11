@@ -9,6 +9,8 @@ export async function expectNoHorizontalOverflow(page: Page) {
 
 /** On mobile the board shows one stage at a time behind tabs; on desktop all columns are visible. */
 export async function openStage(page: Page, label: string) {
+  // The board is a lazy chunk: wait for it before deciding whether stage tabs exist.
+  await expect(page.getByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeVisible()
   const tab = page.getByRole('tab', { name: new RegExp(label) })
   if (await tab.isVisible()) await tab.click()
 }
