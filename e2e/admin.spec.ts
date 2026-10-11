@@ -51,7 +51,7 @@ test('reset requires an in-page confirmation and restores demo data', async ({ p
   await expect(page.getByRole('status')).toContainText('Datos de ejemplo restablecidos')
 })
 
-test('data survives a reopened session after reset', async ({ page }) => {
+test('a client advanced on the board is listed in the admin panel', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Mover a la siguiente etapa: EBAIS Desamparados Sur' }).click()
   await page.goto('/admin')
@@ -59,4 +59,35 @@ test('data survives a reopened session after reset', async ({ page }) => {
   await page.getByRole('button', { name: 'Ingresar' }).click()
   const row = page.getByRole('listitem').filter({ hasText: 'EBAIS Desamparados Sur' })
   await expect(row).toContainText('Cotización enviada')
+})
+
+test('data survives a reopened session after reset', async ({ page, context, browser }) => {
+  await page.getByLabel('Contraseña').fill('tiancy2026')
+  await page.getByRole('button', { name: 'Ingresar' }).click()
+  await page.getByRole('button', { name: 'Restablecer datos de ejemplo' }).click()
+  const confirm = page.getByRole('alertdialog').getByRole('button', { name: 'Sí, restablecer' })
+  await confirm.scrollIntoViewIfNeeded()
+  await confirm.click()
+  await expect(page.getByRole('status')).toContainText('Datos de ejemplo restablecidos')
+
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Mover a la siguiente etapa: EBAIS Desamparados Sur' }).click()
+  const state = await context.storageState()
+
+  // A fresh page in the same context shares localStorage: the change survived the reset.
+  const reopened = await context.newPage()
+  await reopened.goto('/admin')
+  await expect(reopened.getByLabel('Contraseña')).toBeVisible()
+  await reopened.getByLabel('Contraseña').fill('tiancy2026')
+  await reopened.getByRole('button', { name: 'Ingresar' }).click()
+  const row = reopened.getByRole('listitem').filter({ hasText: 'EBAIS Desamparados Sur' })
+  await expect(row).toContainText('Cotización enviada')
+
+  // A brand-new context restored from saved storage (sessionStorage is not included) requires the password again.
+  const fresh = await browser.newContext({ storageState: state })
+  const freshPage = await fresh.newPage()
+  await freshPage.goto('/admin')
+  await expect(freshPage.getByLabel('Contraseña')).toBeVisible()
+  await expect(freshPage.getByRole('list', { name: 'Contactos' })).toHaveCount(0)
+  await fresh.close()
 })
