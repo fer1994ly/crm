@@ -7,6 +7,7 @@ import { advanceClientStage } from '../../pipeline/application/advanceClientStag
 import { STAGE_LABELS } from '../../pipeline/domain/stage'
 import { AdvanceStageButton } from '../../pipeline/ui/AdvanceStageButton'
 import { addClientNote, getClient, sendSimulatedContact } from '../application/clientActions'
+import { sortHistoryNewestFirst } from '../domain/historyOrder'
 import type { Client, HistoryKind, SimulatedChannel } from '../domain/client'
 
 const KIND_LABELS: Record<HistoryKind, string> = {
@@ -99,7 +100,7 @@ function ClientDetail({ id }: { id: string }) {
     )
   }
 
-  const timeline = [...client.history].sort((a, b) => (a.at < b.at ? 1 : -1))
+  const timeline = sortHistoryNewestFirst(client.history)
 
   return (
     <div className="space-y-6">
