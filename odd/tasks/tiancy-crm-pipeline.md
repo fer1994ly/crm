@@ -37,7 +37,7 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 - [x] T2 Pipeline slice: domain (stages, advance, closed lock), seed data, localStorage repository, board UI — route: delegated
 - [x] T3 Client detail slice: contact history + add note — route: delegated
 - [x] T4 Client creation slice: form with required-field validation — route: delegated
-- [ ] T5 Admin slice: password gate, contacts list, reset demo data — route: delegated
+- [x] T5 Admin slice: password gate, contacts list, reset demo data — route: delegated
 - [ ] T6 README, final checks (lint, unit, integration, E2E, build), push to origin/main — route: inline
 
 ## Acceptance criteria
@@ -54,6 +54,7 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 - T2: RED: 8 new test files failed on missing modules (stage, seed, client, repository, advanceClientStage, PipelineBoardPage, shared). GREEN: 31 unit/integration tests pass. E2E (written after UI, no separate RED run): 10 Playwright tests pass on mobile+desktop (move without reload, persists after reload, closed locked, no overflow). Mobile board = stage tabs with counts; desktop = 5 columns.
 - T3: RED: notes.test.ts (4 tests) failed (addNote/logSimulatedContact undefined); clientActions.test.ts and ClientDetailPage.test.tsx failed on missing modules. GREEN: 45 unit/integration tests pass (note persists via repository, empty-note inline error, advance, closed lock, simulated email/WhatsApp logged). E2E 20/20 pass (note persists after reload, no overflow, 44px targets). Detail route is lazy.
 - T4: RED: newClient.test.ts, createClient.test.ts, NewClientPage.test.tsx failed on missing modules. GREEN: 59 unit/integration tests pass (missing fields blocked with inline Spanish errors, quantity 0/-3/2.5/abc rejected, phone/email format, creation at Nuevo contacto). E2E 26/26 pass.
+- T5: RED: adminAuth.test.ts, resetDemoData.test.ts, AdminPage.test.tsx failed on missing modules. GREEN: 70 unit/integration tests pass (password gate renders no contacts and never reads the repository before unlock; wrong password; sessionStorage unlock; lock; reset with in-page alertdialog confirm/cancel). E2E 34/34 pass. Password constant lives in src/features/admin/domain/config.ts.
 
 ## Next step
 T1 scaffold.
