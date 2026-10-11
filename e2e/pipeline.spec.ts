@@ -1,10 +1,8 @@
 import { expect, test } from '@playwright/test'
-import { expectNoHorizontalOverflow, openStage } from './helpers'
+import { expectNoHorizontalOverflow, openStage, resetAndUnlock } from './helpers'
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
-  await page.evaluate(() => localStorage.clear())
-  await page.reload()
+  await resetAndUnlock(page, '/')
 })
 
 test('board has no horizontal overflow and primary actions are usable', async ({ page }) => {

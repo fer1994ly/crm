@@ -1,9 +1,10 @@
 import { expect, test } from '@playwright/test'
+import { resetAndUnlock } from './helpers'
 
 const KEY = 'tiancy-crm:v1:clients'
 
 test('board survives corrupted stored records and keeps the valid ones', async ({ page }) => {
-  await page.goto('/')
+  await resetAndUnlock(page, '/')
   await page.evaluate((key) => {
     const valid = {
       id: 'propio-1',

@@ -1,12 +1,13 @@
 import { NavLink, Outlet } from 'react-router-dom'
+import { useAccess } from '../../features/access/ui/AccessContext'
 
 const links = [
   { to: '/', label: 'Pipeline', end: true },
   { to: '/clientes/nuevo', label: 'Nuevo cliente', end: false },
-  { to: '/admin', label: 'Administración', end: false },
 ]
 
 export function Layout() {
+  const { lock } = useAccess()
   return (
     <div className="min-h-dvh flex flex-col">
       <header className="bg-brand text-white">
@@ -33,6 +34,13 @@ export function Layout() {
                 {l.label}
               </NavLink>
             ))}
+            <button
+              type="button"
+              onClick={lock}
+              className="min-h-11 inline-flex items-center rounded-md px-3 text-sm font-medium hover:bg-white/10"
+            >
+              Cerrar sesión
+            </button>
           </nav>
         </div>
       </header>

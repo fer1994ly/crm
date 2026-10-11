@@ -1,10 +1,8 @@
 import { expect, test } from '@playwright/test'
-import { expectNoHorizontalOverflow } from './helpers'
+import { expectNoHorizontalOverflow, resetAndUnlock } from './helpers'
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/')
-  await page.evaluate(() => localStorage.clear())
-  await page.goto('/clientes/cli-004')
+  await resetAndUnlock(page, '/clientes/cli-004')
 })
 
 test('detail page shows data and timeline without horizontal overflow', async ({ page }) => {
