@@ -38,7 +38,7 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 - [x] T3 Client detail slice: contact history + add note — route: delegated
 - [x] T4 Client creation slice: form with required-field validation — route: delegated
 - [x] T5 Admin slice: password gate, contacts list, reset demo data — route: delegated
-- [ ] T6 README, final checks (lint, unit, integration, E2E, build), push to origin/main — route: inline
+- [x] T6 README, final checks (lint, unit, integration, E2E, build), push to origin/main — route: inline
 
 ## Acceptance criteria
 - Move a contact to the next stage without reload.
@@ -56,5 +56,7 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 - T4: RED: newClient.test.ts, createClient.test.ts, NewClientPage.test.tsx failed on missing modules. GREEN: 59 unit/integration tests pass (missing fields blocked with inline Spanish errors, quantity 0/-3/2.5/abc rejected, phone/email format, creation at Nuevo contacto). E2E 26/26 pass.
 - T5: RED: adminAuth.test.ts, resetDemoData.test.ts, AdminPage.test.tsx failed on missing modules. GREEN: 70 unit/integration tests pass (password gate renders no contacts and never reads the repository before unlock; wrong password; sessionStorage unlock; lock; reset with in-page alertdialog confirm/cancel). E2E 34/34 pass. Password constant lives in src/features/admin/domain/config.ts.
 
+- T6 (partial): README added, commit 0526aff. Parent spot check: npm test 70/70, lint clean, build OK (88.09 kB gzip main), e2e 34/34, console grep empty. RDD assess (base 32f2382, committed-only): medium, review_due=true (slice_budget_reached). User granted; lens review-reliability approved, acknowledged, authority burned (lineage review-f787658da3208c43). Advisory non-blocking follow-ups: R3-stored-shape-validation, R3-detail-handlers-unguarded (WARNING); R3-detail-stale-on-param-change, R3-timeline-comparator, R3-e2e-misnamed-test (SUGGESTION). Pushed to origin/main.
+
 ## Next step
-T1 scaffold.
+Connect the repo in Netlify; optionally address the advisory review follow-ups.
