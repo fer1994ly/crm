@@ -1,6 +1,6 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { Link, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { ClientDetailPage } from './ClientDetailPage'
 import { CLIENTS_STORAGE_KEY, createLocalStorageClientRepository } from '../infrastructure/localStorageClientRepository'
 
@@ -113,6 +113,43 @@ describe('ClientDetailPage', () => {
       await user.click(screen.getByRole('button', { name: 'Enviar por WhatsApp' }))
       expect(screen.getByRole('alert')).toHaveTextContent('El cliente no existe.')
       expect(screen.getByRole('link', { name: 'Volver al tablero' })).toBeInTheDocument()
+    })
+  })
+
+  describe('when the route id changes without unmounting the page', () => {
+    function renderWithSwitcher() {
+      return render(
+        <MemoryRouter initialEntries={['/clientes/cli-004']}>
+          <Link to="/clientes/cli-011">Ir al otro cliente</Link>
+          <Routes>
+            <Route path="/clientes/:id" element={<ClientDetailPage />} />
+          </Routes>
+        </MemoryRouter>,
+      )
+    }
+
+    it('shows the new client and applies actions to it', async () => {
+      const user = userEvent.setup()
+      renderWithSwitcher()
+      expect(screen.getByRole('heading', { level: 1, name: /Hospital Metropolitano/ })).toBeInTheDocument()
+      await user.click(screen.getByRole('link', { name: 'Ir al otro cliente' }))
+      expect(screen.getByRole('heading', { level: 1, name: /Cruz Roja – Comité de Liberia/ })).toBeInTheDocument()
+      await user.type(screen.getByLabelText('Nueva nota'), 'Nota del segundo cliente')
+      await user.click(screen.getByRole('button', { name: 'Guardar nota' }))
+      const repo = createLocalStorageClientRepository()
+      expect(repo.get('cli-011')?.history.at(-1)?.text).toBe('Nota del segundo cliente')
+      expect(repo.get('cli-004')?.history.some((h) => h.text === 'Nota del segundo cliente')).toBe(false)
+    })
+
+    it('resets the note draft and notices of the previous client', async () => {
+      const user = userEvent.setup()
+      renderWithSwitcher()
+      await user.type(screen.getByLabelText('Nueva nota'), 'Borrador del primero')
+      await user.click(screen.getByRole('button', { name: 'Enviar por WhatsApp' }))
+      expect(screen.getByRole('status')).toHaveTextContent('WhatsApp simulado')
+      await user.click(screen.getByRole('link', { name: 'Ir al otro cliente' }))
+      expect(screen.getByLabelText('Nueva nota')).toHaveValue('')
+      expect(screen.getByRole('status')).toHaveTextContent('')
     })
   })
 })

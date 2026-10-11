@@ -27,8 +27,16 @@ function Field({ label, value }: { label: string; value: string }) {
   )
 }
 
+/**
+ * Keys the page by route id so navigating between clients remounts it and
+ * drops per-client state (client data, note draft, alerts, unavailable view).
+ */
 export function ClientDetailPage() {
   const { id = '' } = useParams()
+  return <ClientDetail key={id} id={id} />
+}
+
+function ClientDetail({ id }: { id: string }) {
   const [client, setClient] = useState<Client | undefined>(() => getClient(getClientRepository(), id))
   const [note, setNote] = useState('')
   const [noteError, setNoteError] = useState('')
