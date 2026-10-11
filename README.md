@@ -23,7 +23,7 @@ npm run dev        # http://localhost:5173
 | `npm run lint` | ESLint (`no-console` is an error) |
 | `npm run typecheck` | TypeScript strict check |
 | `npm test` | Unit and integration tests (Vitest + Testing Library) |
-| `npm run test:e2e` | E2E tests (Playwright, mobile Pixel 7 + desktop). Run `npx playwright install chromium` once first |
+| `npm run test:e2e` | E2E tests (Playwright: mobile Pixel 7, desktop Chrome and iPhone 15 on WebKit/Safari). Run `npx playwright install chromium webkit` once first |
 
 ## Access screen and demo password
 
@@ -82,4 +82,4 @@ Vertical slices with DDD layers under `src/features/<slice>/{domain,application,
 
 ## Stack
 
-React 19, TypeScript, Vite, Tailwind CSS 4, React Router, Vitest, Testing Library, Playwright.
+React 19, TypeScript, Vite, Tailwind CSS 4, React Router, Vitest, Testing Library, Playwright. Fonts (Inter, Montserrat) are self-hosted via Fontsource; pages load lazily behind the access gate.
