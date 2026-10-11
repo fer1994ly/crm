@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { formatCrc } from '../../../shared/money'
 import { formatDate } from '../../../shared/dates'
-import { isClosedStage } from '../../pipeline/domain/stage'
+import { AdvanceStageButton } from '../../pipeline/ui/AdvanceStageButton'
 import { lastActivityAt, type Client } from '../domain/client'
 
 interface Props {
@@ -10,7 +10,6 @@ interface Props {
 }
 
 export function ClientCard({ client, onAdvance }: Props) {
-  const closed = isClosedStage(client.stage)
   return (
     <article
       aria-label={client.institution}
@@ -46,16 +45,7 @@ export function ClientCard({ client, onAdvance }: Props) {
         </div>
       </dl>
       <div className="mt-3">
-        <button
-          type="button"
-          disabled={closed}
-          onClick={() => onAdvance(client.id)}
-          aria-label={`Mover a la siguiente etapa: ${client.institution}`}
-          className="min-h-11 w-full rounded-md bg-brand px-3 text-sm font-semibold text-white hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
-        >
-          Mover a la siguiente etapa
-        </button>
-        {closed && <p className="mt-1 text-xs text-muted">Pedido cerrado: no hay etapa siguiente.</p>}
+        <AdvanceStageButton client={client} onAdvance={onAdvance} />
       </div>
     </article>
   )

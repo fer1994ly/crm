@@ -1,13 +1,29 @@
+import { lazy, Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { Layout } from './shared/ui/Layout'
 import { PipelineBoardPage } from './features/pipeline/ui/PipelineBoardPage'
 
+const ClientDetailPage = lazy(() =>
+  import('./features/clients/ui/ClientDetailPage').then((m) => ({ default: m.ClientDetailPage })),
+)
+
+function Loading() {
+  return (
+    <p role="status" className="text-sm text-muted">
+      Cargando…
+    </p>
+  )
+}
+
 export function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<PipelineBoardPage />} />
-      </Route>
-    </Routes>
+    <Suspense fallback={<Loading />}>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<PipelineBoardPage />} />
+          <Route path="clientes/:id" element={<ClientDetailPage />} />
+        </Route>
+      </Routes>
+    </Suspense>
   )
 }

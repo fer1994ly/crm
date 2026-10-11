@@ -47,3 +47,20 @@ export function advanceClient(client: Client, at: string): Client {
 export function lastActivityAt(client: Client): string {
   return client.history.reduce((latest, e) => (e.at > latest ? e.at : latest), '')
 }
+
+export type SimulatedChannel = 'email' | 'whatsapp'
+
+export function addNote(client: Client, text: string, at: string): Client {
+  const clean = text.trim()
+  if (!clean) throw new Error('La nota no puede estar vacía.')
+  return appendHistory(client, createHistoryEntry('note', clean, at))
+}
+
+/** Local, simulated outreach: no external service is called, only the history is updated. */
+export function logSimulatedContact(client: Client, channel: SimulatedChannel, at: string): Client {
+  const entry =
+    channel === 'email'
+      ? createHistoryEntry('email', `Correo simulado enviado a ${client.contactName} con la cotización de ${client.product}.`, at)
+      : createHistoryEntry('whatsapp', `Mensaje de WhatsApp simulado enviado a ${client.contactName} con el resumen de la cotización.`, at)
+  return appendHistory(client, entry)
+}

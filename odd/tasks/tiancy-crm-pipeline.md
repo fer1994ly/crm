@@ -35,7 +35,7 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 ## Tasks
 - [x] T1 Scaffold: Vite React TS, Tailwind, Vitest, Playwright, ESLint `no-console: error`, netlify.toml — route: delegated
 - [x] T2 Pipeline slice: domain (stages, advance, closed lock), seed data, localStorage repository, board UI — route: delegated
-- [ ] T3 Client detail slice: contact history + add note — route: delegated
+- [x] T3 Client detail slice: contact history + add note — route: delegated
 - [ ] T4 Client creation slice: form with required-field validation — route: delegated
 - [ ] T5 Admin slice: password gate, contacts list, reset demo data — route: delegated
 - [ ] T6 README, final checks (lint, unit, integration, E2E, build), push to origin/main — route: inline
@@ -52,6 +52,7 @@ Small clinic quotes get lost while the team focuses on large orders. Every insti
 ## Progress / Evidence
 - T1: RED: App.test.tsx "renders the brand and primary navigation" failed (cannot resolve ./App). GREEN after Layout/App. lint, typecheck, build, vitest, Playwright smoke (mobile Pixel 7 + desktop) pass. Stack: Vite 8, React 19, Tailwind 4 (@theme tokens), Vitest 5, Playwright 1.64. Route: delegated writer.
 - T2: RED: 8 new test files failed on missing modules (stage, seed, client, repository, advanceClientStage, PipelineBoardPage, shared). GREEN: 31 unit/integration tests pass. E2E (written after UI, no separate RED run): 10 Playwright tests pass on mobile+desktop (move without reload, persists after reload, closed locked, no overflow). Mobile board = stage tabs with counts; desktop = 5 columns.
+- T3: RED: notes.test.ts (4 tests) failed (addNote/logSimulatedContact undefined); clientActions.test.ts and ClientDetailPage.test.tsx failed on missing modules. GREEN: 45 unit/integration tests pass (note persists via repository, empty-note inline error, advance, closed lock, simulated email/WhatsApp logged). E2E 20/20 pass (note persists after reload, no overflow, 44px targets). Detail route is lazy.
 
 ## Next step
 T1 scaffold.
