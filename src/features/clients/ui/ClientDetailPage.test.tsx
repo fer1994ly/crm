@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { ClientDetailPage } from './ClientDetailPage'
-import { createLocalStorageClientRepository } from '../infrastructure/localStorageClientRepository'
+import { CLIENTS_STORAGE_KEY, createLocalStorageClientRepository } from '../infrastructure/localStorageClientRepository'
 
 function renderDetail(id: string) {
   return render(
@@ -77,5 +77,42 @@ describe('ClientDetailPage', () => {
     renderDetail('no-existe')
     expect(screen.getByText('No encontramos este cliente.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Volver al pipeline' })).toBeInTheDocument()
+  })
+
+  describe('when the client disappears while the page is open', () => {
+    function vanish(id: string) {
+      const repo = createLocalStorageClientRepository()
+      const rest = repo.list().filter((c) => c.id !== id)
+      localStorage.setItem(CLIENTS_STORAGE_KEY, JSON.stringify(rest))
+    }
+
+    it('shows a message and a link back to the board when advancing', async () => {
+      const user = userEvent.setup()
+      renderDetail('cli-004')
+      vanish('cli-004')
+      await user.click(screen.getByRole('button', { name: /Mover a la siguiente etapa/ }))
+      expect(screen.getByRole('alert')).toHaveTextContent('El cliente no existe.')
+      expect(screen.getByRole('link', { name: 'Volver al tablero' })).toHaveAttribute('href', '/')
+      expect(screen.queryByRole('button', { name: /Mover a la siguiente etapa/ })).not.toBeInTheDocument()
+    })
+
+    it('shows the message when saving a note', async () => {
+      const user = userEvent.setup()
+      renderDetail('cli-004')
+      vanish('cli-004')
+      await user.type(screen.getByLabelText('Nueva nota'), 'Nota huérfana')
+      await user.click(screen.getByRole('button', { name: 'Guardar nota' }))
+      expect(screen.getByRole('alert')).toHaveTextContent('El cliente no existe.')
+      expect(screen.getByRole('link', { name: 'Volver al tablero' })).toBeInTheDocument()
+    })
+
+    it('shows the message when logging a simulated contact', async () => {
+      const user = userEvent.setup()
+      renderDetail('cli-004')
+      vanish('cli-004')
+      await user.click(screen.getByRole('button', { name: 'Enviar por WhatsApp' }))
+      expect(screen.getByRole('alert')).toHaveTextContent('El cliente no existe.')
+      expect(screen.getByRole('link', { name: 'Volver al tablero' })).toBeInTheDocument()
+    })
   })
 })

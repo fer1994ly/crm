@@ -33,17 +33,39 @@ export function ClientDetailPage() {
   const [note, setNote] = useState('')
   const [noteError, setNoteError] = useState('')
   const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
 
   if (!client) {
     return (
       <div>
         <h1 className="text-2xl text-brand">Cliente no disponible</h1>
-        <p className="mt-2">No encontramos este cliente.</p>
+        {error ? (
+          <p role="alert" className="mt-2 font-medium text-red-700">
+            {error}
+          </p>
+        ) : (
+          <p className="mt-2">No encontramos este cliente.</p>
+        )}
         <Link to="/" className="mt-4 inline-flex min-h-11 items-center font-semibold text-brand underline">
-          Volver al pipeline
+          {error ? 'Volver al tablero' : 'Volver al pipeline'}
         </Link>
       </div>
     )
+  }
+
+  /** Runs a use case; on failure shows its message and drops stale data if the client vanished. */
+  function run(action: () => Client, successNotice: string): boolean {
+    try {
+      setClient(action())
+      setError('')
+      setNotice(successNotice)
+      return true
+    } catch (e) {
+      setNotice('')
+      setError(e instanceof Error ? e.message : 'No se pudo completar la acción.')
+      if (!getClient(getClientRepository(), id)) setClient(undefined)
+      return false
+    }
   }
 
   function submitNote(event: FormEvent) {
@@ -52,20 +74,21 @@ export function ClientDetailPage() {
       setNoteError('Escriba el contenido de la nota.')
       return
     }
-    setClient(addClientNote(getClientRepository(), id, note))
-    setNote('')
-    setNoteError('')
-    setNotice('Nota guardada.')
+    if (run(() => addClientNote(getClientRepository(), id, note), 'Nota guardada.')) {
+      setNote('')
+      setNoteError('')
+    }
   }
 
   function advance() {
-    setClient(advanceClientStage(getClientRepository(), id))
-    setNotice('Etapa actualizada.')
+    run(() => advanceClientStage(getClientRepository(), id), 'Etapa actualizada.')
   }
 
   function simulate(channel: SimulatedChannel) {
-    setClient(sendSimulatedContact(getClientRepository(), id, channel))
-    setNotice(channel === 'email' ? 'Correo simulado registrado en el historial.' : 'WhatsApp simulado registrado en el historial.')
+    run(
+      () => sendSimulatedContact(getClientRepository(), id, channel),
+      channel === 'email' ? 'Correo simulado registrado en el historial.' : 'WhatsApp simulado registrado en el historial.',
+    )
   }
 
   const timeline = [...client.history].sort((a, b) => (a.at < b.at ? 1 : -1))
@@ -90,6 +113,11 @@ export function ClientDetailPage() {
       <p role="status" aria-live="polite" className="min-h-5 text-sm font-medium text-brand">
         {notice}
       </p>
+      {error && (
+        <p role="alert" className="text-sm font-medium text-red-700">
+          {error}
+        </p>
+      )}
 
       <section aria-labelledby="datos" className="rounded-lg border border-line bg-surface p-4">
         <h2 id="datos" className="mb-3 text-lg text-brand">

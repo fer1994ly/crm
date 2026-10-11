@@ -48,3 +48,15 @@ test('opens from the board card link', async ({ page }) => {
   await page.getByRole('link', { name: 'Clínica Santa Lucía – Heredia' }).click()
   await expect(page.getByRole('heading', { level: 1, name: /Clínica Santa Lucía/ })).toBeVisible()
 })
+
+test('shows a message and a way back when the client disappears from storage', async ({ page }) => {
+  await page.evaluate(() => {
+    const key = 'tiancy-crm:v1:clients'
+    const all = JSON.parse(localStorage.getItem(key)!) as { id: string }[]
+    localStorage.setItem(key, JSON.stringify(all.filter((c) => c.id !== 'cli-004')))
+  })
+  await page.getByRole('button', { name: /Mover a la siguiente etapa/ }).click()
+  await expect(page.getByRole('alert')).toContainText('El cliente no existe.')
+  await page.getByRole('link', { name: 'Volver al tablero' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeVisible()
+})
