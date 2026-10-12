@@ -29,6 +29,34 @@ test.describe('admin panel', () => {
     expect((await edit.boundingBox())!.height).toBeGreaterThanOrEqual(44)
   })
 
+  test('lists every stored contact across all 5 stages and keeps every action at 44px', async ({ page }) => {
+    const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '[]').length, CLIENTS_KEY)
+    await expect(page.getByRole('article')).toHaveCount(stored)
+    const stages = await page.getByTestId('stage-badge').allTextContents()
+    expect(new Set(stages).size).toBe(5)
+    for (const name of [/^Editar /, /^Eliminar /]) {
+      for (const button of await page.getByRole('button', { name }).all()) {
+        expect((await button.boundingBox())!.height).toBeGreaterThanOrEqual(44)
+      }
+    }
+    await page.getByRole('button', { name: 'Editar EBAIS Desamparados Sur' }).click()
+    for (const name of ['Guardar cambios', 'Cancelar edición']) {
+      expect((await page.getByRole('button', { name }).boundingBox())!.height).toBeGreaterThanOrEqual(44)
+    }
+  })
+
+  test('reports an edit of a contact that no longer exists and refreshes the list', async ({ page }) => {
+    await page.getByRole('button', { name: 'Editar EBAIS Desamparados Sur' }).click()
+    await page.evaluate((key) => {
+      const all = JSON.parse(localStorage.getItem(key) ?? '[]')
+      localStorage.setItem(key, JSON.stringify(all.filter((c: { institution: string }) => c.institution !== 'EBAIS Desamparados Sur')))
+    }, CLIENTS_KEY)
+    await page.getByRole('button', { name: 'Guardar cambios' }).click()
+    await expect(page.getByRole('alert')).toContainText('Este contacto ya no existe')
+    await expect(page.getByRole('article')).toHaveCount(11)
+    await expectNoHorizontalOverflow(page)
+  })
+
   test('is reachable from the header link', async ({ page }) => {
     await page.goto('/')
     await page.getByRole('link', { name: 'Administración' }).click()

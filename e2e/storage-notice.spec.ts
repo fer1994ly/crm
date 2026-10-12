@@ -9,6 +9,13 @@ test('shows no notice when storage works', async ({ page }) => {
   await expect(page.getByText(NOTICE)).toHaveCount(0)
 })
 
+test('shows no notice inside the app when storage works', async ({ page }) => {
+  await page.goto('/')
+  await unlock(page)
+  await expect(page.getByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeVisible()
+  await expect(page.getByText(NOTICE)).toHaveCount(0)
+})
+
 test.describe('with localStorage blocked', () => {
   test.beforeEach(async ({ page }) => {
     await page.addInitScript(() => {

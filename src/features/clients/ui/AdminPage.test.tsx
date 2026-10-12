@@ -12,6 +12,10 @@ function renderAdmin() {
   )
 }
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 describe('AdminPage', () => {
   it('lists every contact of every stage with stage and contact info', () => {
     renderAdmin()
@@ -89,5 +93,66 @@ describe('AdminPage', () => {
       await user.click(screen.getByRole('button', { name: 'Sí, eliminar' }))
     }
     expect(screen.getByText('No hay contactos registrados.')).toBeInTheDocument()
+  })
+
+  describe('failures', () => {
+    async function openEditor(user: ReturnType<typeof userEvent.setup>) {
+      renderAdmin()
+      const target = getClientRepository().list()[0]
+      await user.click(screen.getByRole('button', { name: `Editar ${target.institution}` }))
+      return target
+    }
+
+    it('reports an edit of a contact that vanished, closes the editor and refreshes the list', async () => {
+      const user = userEvent.setup()
+      const target = await openEditor(user)
+      getClientRepository().remove(target.id)
+      await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+      expect(screen.getByRole('alert')).toHaveTextContent('Este contacto ya no existe')
+      expect(screen.queryByRole('article', { name: `Editando ${target.institution}` })).not.toBeInTheDocument()
+      expect(screen.queryByRole('article', { name: target.institution })).not.toBeInTheDocument()
+      expect(screen.getAllByRole('article')).toHaveLength(11)
+    })
+
+    it('reports a failed write when saving an edit and keeps the list in sync with storage', async () => {
+      const user = userEvent.setup()
+      const target = await openEditor(user)
+      vi.spyOn(getClientRepository(), 'save').mockImplementation(() => {
+        throw new Error('disk full')
+      })
+      await user.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+      expect(screen.getByRole('alert')).toHaveTextContent('No se pudieron guardar los cambios')
+      expect(screen.queryByRole('article', { name: `Editando ${target.institution}` })).not.toBeInTheDocument()
+      expect(screen.getByRole('article', { name: target.institution })).toBeInTheDocument()
+    })
+
+    it('reports a delete of a contact that vanished, closes the dialog and refreshes the list', async () => {
+      const user = userEvent.setup()
+      renderAdmin()
+      const target = getClientRepository().list()[1]
+      await user.click(screen.getByRole('button', { name: `Eliminar ${target.institution}` }))
+      getClientRepository().remove(target.id)
+      await user.click(screen.getByRole('button', { name: 'Sí, eliminar' }))
+      expect(screen.getByRole('alert')).toHaveTextContent('Este contacto ya no existe')
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+      expect(screen.queryByRole('article', { name: target.institution })).not.toBeInTheDocument()
+      expect(screen.getAllByRole('article')).toHaveLength(11)
+      expect(screen.queryByText(/Contacto eliminado/)).not.toBeInTheDocument()
+    })
+
+    it('reports a failed write when deleting, closes the dialog and keeps the contact listed', async () => {
+      const user = userEvent.setup()
+      renderAdmin()
+      const target = getClientRepository().list()[1]
+      await user.click(screen.getByRole('button', { name: `Eliminar ${target.institution}` }))
+      vi.spyOn(getClientRepository(), 'remove').mockImplementation(() => {
+        throw new Error('disk full')
+      })
+      await user.click(screen.getByRole('button', { name: 'Sí, eliminar' }))
+      expect(screen.getByRole('alert')).toHaveTextContent('No se pudo eliminar el contacto')
+      expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+      expect(screen.getByRole('article', { name: target.institution })).toBeInTheDocument()
+      expect(screen.queryByText(/Contacto eliminado/)).not.toBeInTheDocument()
+    })
   })
 })

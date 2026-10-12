@@ -73,16 +73,26 @@ function ContactCard({ client, onEdit, onDelete }: { client: Client; onEdit: () 
   )
 }
 
-function EditCard({ client, onDone }: { client: Client; onDone: (saved: boolean) => void }) {
+type EditOutcome = 'saved' | 'cancelled' | 'missing' | 'failed'
+
+const MISSING_MESSAGE = 'Este contacto ya no existe: la lista se actualizó.'
+
+function EditCard({ client, onDone }: { client: Client; onDone: (outcome: EditOutcome) => void }) {
   const [values, setValues] = useState<NewClientInput>(() => toInput(client))
   const [errors, setErrors] = useState<NewClientErrors>({})
   const refs = useRef<Partial<Record<NewClientField, HTMLInputElement | null>>>({})
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
-    const result = updateClientDetails(getClientRepository(), client.id, values)
+    let result: ReturnType<typeof updateClientDetails>
+    try {
+      result = updateClientDetails(getClientRepository(), client.id, values)
+    } catch {
+      onDone('failed')
+      return
+    }
     if (result.ok) {
-      onDone(true)
+      onDone('saved')
       return
     }
     if ('errors' in result) {
@@ -90,7 +100,7 @@ function EditCard({ client, onDone }: { client: Client; onDone: (saved: boolean)
       const first = CLIENT_FIELDS.find((f) => result.errors[f.name])
       if (first) refs.current[first.name]?.focus()
     } else {
-      onDone(false)
+      onDone('missing')
     }
   }
 
@@ -115,7 +125,7 @@ function EditCard({ client, onDone }: { client: Client; onDone: (saved: boolean)
           </button>
           <button
             type="button"
-            onClick={() => onDone(false)}
+            onClick={() => onDone('cancelled')}
             className="min-h-11 rounded-md border border-line px-4 text-sm font-semibold"
           >
             Cancelar edición
@@ -132,6 +142,7 @@ export function AdminPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<Client | null>(null)
   const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
   const cancelRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
@@ -144,21 +155,30 @@ export function AdminPage() {
     return () => document.removeEventListener('keydown', onKeyDown)
   }, [deleting])
 
-  function finishEdit(saved: boolean) {
+  function finishEdit(outcome: EditOutcome) {
     setEditingId(null)
-    if (saved) {
-      refresh()
-      setNotice('Cambios guardados.')
-    }
+    if (outcome === 'cancelled') return
+    // Whatever happened, re-read storage so the list never shows stale data.
+    refresh()
+    if (outcome === 'saved') setNotice('Cambios guardados.')
+    else setError(outcome === 'missing' ? MISSING_MESSAGE : 'No se pudieron guardar los cambios. Intente de nuevo.')
   }
 
   function confirmDelete() {
     if (!deleting) return
     const name = deleting.institution
-    deleteClient(getClientRepository(), deleting.id)
+    let removed = false
+    let failed = false
+    try {
+      removed = deleteClient(getClientRepository(), deleting.id)
+    } catch {
+      failed = true
+    }
     setDeleting(null)
     refresh()
-    setNotice(`Contacto eliminado: ${name}.`)
+    if (failed) setError('No se pudo eliminar el contacto. Intente de nuevo.')
+    else if (!removed) setError(MISSING_MESSAGE)
+    else setNotice(`Contacto eliminado: ${name}.`)
   }
 
   return (
@@ -167,6 +187,11 @@ export function AdminPage() {
       <p className="mt-1 text-sm text-muted">
         Todos los contactos de todas las etapas: {clients.length}. Edite o elimine cualquier contacto.
       </p>
+      {error && (
+        <p role="alert" className="mt-3 break-words rounded-md border border-red-700 bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+          {error}
+        </p>
+      )}
       {notice && (
         <p role="status" className="mt-3 break-words rounded-md bg-accent/25 px-3 py-2 text-sm font-medium text-brand-dark">
           {notice}
@@ -185,10 +210,12 @@ export function AdminPage() {
                   client={client}
                   onEdit={() => {
                     setNotice('')
+                    setError('')
                     setEditingId(client.id)
                   }}
                   onDelete={() => {
                     setNotice('')
+                    setError('')
                     setDeleting(client)
                   }}
                 />

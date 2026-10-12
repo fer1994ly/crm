@@ -17,6 +17,10 @@ async function unlock(user: ReturnType<typeof userEvent.setup>, password = 'tian
   await user.click(screen.getByRole('button', { name: 'Ingresar' }))
 }
 
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
 describe('AccessGate', () => {
   it.each(['/', '/clientes/nuevo', '/clientes/cli-004', '/admin', '/no-existe'])(
     'shows only the login on %s and never reads the repository',
@@ -53,7 +57,6 @@ describe('AccessGate', () => {
     })
     renderAt('/')
     expect(screen.getByRole('status')).toHaveTextContent(/bloqueando el almacenamiento local/)
-    vi.restoreAllMocks()
   })
 
   it('shows the demo password hint', () => {
