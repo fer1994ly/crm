@@ -27,7 +27,7 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 
 ## Tasks
 - [x] T13 Admin panel at /admin: list all contacts, edit, delete — route: delegated (writer trigger: 2+ non-trivial files)
-- [ ] T14 Business info page with Maps link and social networks; README marks example data — route: delegated
+- [x] T14 Business info page with Maps link and social networks; README marks example data — route: delegated
 - [ ] T15 Visible notice when localStorage is blocked — route: delegated
 
 ## Acceptance criteria
@@ -45,5 +45,11 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 - Checks: lint clean, typecheck clean, `npm test` 129 passed, `npm run test:e2e` 96 passed (3 projects), build OK, no console.log.
 - Decisions: cards (no table) so mobile never overflows; edit keeps history untouched (no history entry added); delete removes history with the contact.
 
+### T14 (delegated writer)
+- RED: `businessInfo.test.ts` and `BusinessPage.test.tsx` failed to load (modules missing); `AccessGate.test.tsx > links the login to the public business page` and `> shows the business page without the password...` failed; `App.test.tsx` failed (no Empresa link). E2E written after the implementation (no separate RED run).
+- GREEN: `src/features/business/{domain/businessInfo.ts,ui/BusinessPage.tsx}`; public lazy route `/empresa` outside the AccessGate (`App.tsx` now routes `/empresa` before the gated `*`); login link "Sobre Tiancy Médica"; header link "Empresa"; Maps link `https://www.google.com/maps/search/?api=1&query=<encoded>` with target=_blank rel="noopener noreferrer". README documents the example data and where to change it.
+- Checks: lint clean, typecheck clean, `npm test` 138 passed, `npm run test:e2e` 108 passed (3 projects), build OK, no console.log.
+- Decisions: public page has its own minimal header ("Ir al CRM" link) instead of the CRM Layout; all facts (address, phone, hours, socials) are invented example data.
+
 ## Next step
-T14.
+T15.

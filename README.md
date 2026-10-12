@@ -41,6 +41,7 @@ The whole CRM sits behind an access screen: on any route (board, client detail, 
 - **Ficha del cliente** (`/clientes/:id`): data, contact history, add a note, advance stage, simulated contact actions.
 - **Nuevo cliente** (`/clientes/nuevo`): creation form; it does not submit while a required field is missing.
 - **Administración** (`/admin`, behind the access password): every contact of every stage as cards. **Editar** reuses the creation validation (required fields, quantity, phone/email format) and keeps stage and history; **Eliminar** asks for an in-page confirmation and removes the contact (history included) from storage.
+- **Sobre Tiancy Médica** (`/empresa`, public): what the company does, address with a Google Maps link, hours and social links. It shows no contact data, so it is reachable without the password (link on the login screen and **Empresa** in the header).
 - **Cuenta** (header menu): **Restablecer datos de ejemplo** (with an in-page confirmation) and **Cerrar sesión**.
 
 ## What is simulated
@@ -50,6 +51,10 @@ There is no backend and no external service:
 - **Data**: stored in the browser `localStorage` under the key `tiancy-crm:v1:clients`. On first load, 12 sample institutional clients are seeded across all stages.
 - **"Enviar cotización por correo" / "Enviar por WhatsApp"**: no message is sent; the action only records a simulated entry in the client's contact history.
 - **Access control**: a client-side demo password, not real security. The backend integration should replace it.
+
+## Business information page (example data)
+
+The text, address, phone, hours and social links on `/empresa` are **EXAMPLE data: plausible, not real** (the address, phone number, `info@tiancymedica.example` and the Facebook, Instagram, LinkedIn and WhatsApp URLs are invented). Replace them in `src/features/business/domain/businessInfo.ts` (`BUSINESS_INFO`); the Google Maps link is derived from the address automatically.
 
 ## Resetting the sample data
 

@@ -30,6 +30,18 @@ describe('AccessGate', () => {
     },
   )
 
+  it('links the login to the public business page', () => {
+    renderAt('/')
+    expect(screen.getByRole('link', { name: 'Sobre Tiancy Médica' })).toHaveAttribute('href', '/empresa')
+  })
+
+  it('shows the business page without the password and without reading contacts', async () => {
+    renderAt('/empresa')
+    expect(await screen.findByRole('heading', { level: 1, name: 'Sobre Tiancy Médica' })).toBeInTheDocument()
+    expect(screen.queryByLabelText('Clave de acceso')).not.toBeInTheDocument()
+    expect(localStorage.getItem(CLIENTS_STORAGE_KEY)).toBeNull()
+  })
+
   it('shows the demo password hint', () => {
     renderAt('/')
     expect(screen.getByText('Clave de demostración: tiancy2026')).toBeInTheDocument()

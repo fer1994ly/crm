@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { browserStorage } from '../../../shared/storage/keyValueStorage'
 import { createAccessControl } from '../application/accessControl'
 import { ACCESS_PASSWORD } from '../domain/config'
@@ -72,6 +73,9 @@ export function AccessGate({ children }: { children: ReactNode }) {
           </button>
         </form>
         <p className="mt-3 text-sm text-muted">Clave de demostración: {ACCESS_PASSWORD}</p>
+        <Link to="/empresa" className="mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-brand underline">
+          Sobre Tiancy Médica
+        </Link>
       </div>
     </div>
   )

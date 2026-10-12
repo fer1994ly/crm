@@ -6,6 +6,7 @@ const links = [
   { to: '/', label: 'Pipeline', end: true },
   { to: '/clientes/nuevo', label: 'Nuevo cliente', end: false },
   { to: '/admin', label: 'Administración', end: false },
+  { to: '/empresa', label: 'Empresa', end: false },
 ]
 
 export function Layout() {
