@@ -29,6 +29,7 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 - [x] T13 Admin panel at /admin: list all contacts, edit, delete — route: delegated (writer trigger: 2+ non-trivial files)
 - [x] T14 Business info page with Maps link and social networks; README marks example data — route: delegated
 - [x] T15 Visible notice when localStorage is blocked — route: delegated
+- [x] T16 Fix review advisories: vacuous layout-notice test, delete result ignored, edit on missing contact silently dropped, inline mock restore leak; re-verify the three requirements end to end — user-authorized — route: delegated
 
 ## Acceptance criteria
 - `/admin` asks for the password on a fresh session, then lists every contact from every stage.
@@ -61,5 +62,13 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 - RDD assess base 1a58132 committed-only: medium, review_due (slice_budget_reached, 1384 lines). User granted; review-reliability approved, acknowledged, authority burned (lineage review-d9014b59a162fa2d).
 - Advisory (non-blocking): R3-app-layout-notice-test-vacuous (WARNING, src/App.test.tsx:31-40); R3-delete-result-ignored (AdminPage.tsx:158-161), R3-edit-notfound-silently-dropped (AdminPage.tsx:92-93), R3-inline-restore-mocks-leak (AccessGate.test.tsx:51-56) (SUGGESTION).
 
+### T16 (delegated writer)
+- Finding 1 (vacuous test): root cause confirmed: with setItem mocked, session storage also fell back to memory, so the pre-set unlock flag was lost and the notice matched on the LOGIN screen. Test rewritten: starts on the login (blocked), unlocks through the UI, waits for the board heading, asserts the login is gone and exactly one notice remains; negative case with storage OK added (fresh modules so the repository singleton is built while blocked). Mutation proof: removed `<StorageNotice />` from Layout -> the blocked test FAILED ("Unable to find ... bloqueando el almacenamiento local"); restored -> 3/3 PASS.
+- Findings 2 and 3 RED: 4 new AdminPage tests (vanished contact on edit and delete, throwing repository save/remove) failed with 'Unable to find role "alert"' (and the throw escaping). GREEN: `EditOutcome`, guarded try/catch in edit submit and confirmDelete, role="alert" region, editor/dialog closed, list refreshed from the repository, no false "eliminado" notice. 9/9 pass.
+- Finding 4: inline `vi.restoreAllMocks()` moved to `afterEach` in AccessGate.test.tsx, App.test.tsx, AdminPage.test.tsx (also covers the confirm spy); other T13-T15 files already used afterEach.
+- Requirement re-verification (E2E, 3 projects): /admin gate + all stored contacts listed (count equals localStorage, 5 distinct stages), edit/delete persist after reload, 44px on Editar/Eliminar/Guardar/Cancelar, no overflow; /empresa (public from login, Maps href/target/rel, socials, README marks example data); storage notice on login and in app when blocked, none when OK (added in-app negative case). Gaps found: none functional; E2E gaps filled: stored-count/5-stage assertion, 44px on all admin actions, vanished-contact edit, in-app no-notice. The vanished-edit E2E was observed RED against the old AdminPage; the other added E2E assertions were written after the behavior.
+- Checks: lint clean, typecheck clean, `npm test` 152 passed, `npm run test:e2e` 126 passed (3 projects), build OK, console.log grep empty.
+- Commit: 955ff8a fix(admin): surface failed edits and deletes.
+
 ## Next step
-Push `feat/review-scope-gaps` and open a PR (user decision). Optional advisory follow-ups above.
+Push and open the PR (user decision).
