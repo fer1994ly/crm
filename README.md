@@ -6,6 +6,8 @@ Mobile-first CRM for Tiancy Médica (Costa Rica) to track institutional quotes t
 
 Each client has exactly one active stage. "Mover a la siguiente etapa" advances it one position, and a client in "Pedido cerrado" can no longer move.
 
+**Live demo**: https://crm-medico.netlify.app (password `tiancy2026`). Business page, no password needed: https://crm-medico.netlify.app/empresa
+
 ## Getting started
 
 Requirements: Node 24 (see `.nvmrc`).
@@ -42,6 +44,7 @@ The whole CRM sits behind an access screen: on any route (board, client detail, 
 - **Nuevo cliente** (`/clientes/nuevo`): creation form; it does not submit while a required field is missing.
 - **Administración** (`/admin`, behind the access password): every contact of every stage as cards. **Editar** reuses the creation validation (required fields, quantity, phone/email format) and keeps stage and history; **Eliminar** asks for an in-page confirmation and removes the contact (history included) from storage.
 - **Sobre Tiancy Médica** (`/empresa`, public): what the company does, address with a Google Maps link, hours and social links. It shows no contact data, so it is reachable without the password (link on the login screen and **Empresa** in the header).
+- **Header**: links **Pipeline** (board), **Nuevo cliente**, **Administración** and **Empresa**, plus the **Cuenta** menu.
 - **Cuenta** (header menu): **Restablecer datos de ejemplo** (with an in-page confirmation) and **Cerrar sesión**.
 
 ## What is simulated
@@ -69,10 +72,11 @@ Either:
 Vertical slices with DDD layers under `src/features/<slice>/{domain,application,infrastructure,ui}`:
 
 - `pipeline`: stage model, advance rule, board.
-- `clients`: client aggregate, seed data, creation, detail and notes, localStorage repository.
+- `clients`: client aggregate, seed data, creation, detail and notes, admin panel (edit and delete use cases, shared form fields and validation), localStorage repository.
 - `access`: password gate, account menu (lock, demo data reset).
+- `business`: public company information page and its example data.
 
-`src/shared` holds the storage port/adapters and small helpers; `src/app/repositories.ts` is the composition root. The domain is plain TypeScript; use cases depend on the `ClientRepository` port, so a backend adapter can replace the localStorage one.
+`src/shared` holds the storage port/adapters (with blocked-storage detection), the layout, the storage notice and small helpers; `src/app/repositories.ts` is the composition root. The domain is plain TypeScript; use cases depend on the `ClientRepository` port, so a backend adapter can replace the localStorage one.
 
 ## Deployment (Netlify)
 
@@ -89,4 +93,4 @@ Vertical slices with DDD layers under `src/features/<slice>/{domain,application,
 
 ## Stack
 
-React 19, TypeScript, Vite, Tailwind CSS 4, React Router, Vitest, Testing Library, Playwright. Fonts (Inter, Montserrat) are self-hosted via Fontsource; pages load lazily behind the access gate.
+React 19, TypeScript, Vite, Tailwind CSS 4, React Router, Vitest, Testing Library, Playwright. Fonts (Inter, Montserrat) are self-hosted via Fontsource; CRM pages load lazily behind the access gate, and `/empresa` loads lazily outside it.

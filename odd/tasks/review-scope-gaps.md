@@ -72,5 +72,7 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 
 - T16 parent check: `npm test` 152/152. RDD assess base 5780849 committed-only: medium, review_due=false (under_budget, 203 lines); stays pending in the slice.
 
+- Delivery: user asked to merge; main fast-forwarded to a847c2a and pushed. Netlify served new bundle index-Cop8idUO.js (contains login link "Sobre Tiancy", storage notice text, /empresa route).
+
 ## Next step
-Push and open the PR (user decision).
+User confirms /admin, /empresa and the storage notice on crm-medico.netlify.app.
