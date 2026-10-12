@@ -70,5 +70,7 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 - Checks: lint clean, typecheck clean, `npm test` 152 passed, `npm run test:e2e` 126 passed (3 projects), build OK, console.log grep empty.
 - Commit: 955ff8a fix(admin): surface failed edits and deletes.
 
+- T16 parent check: `npm test` 152/152. RDD assess base 5780849 committed-only: medium, review_due=false (under_budget, 203 lines); stays pending in the slice.
+
 ## Next step
 Push and open the PR (user decision).
