@@ -16,4 +16,27 @@ describe('App shell', () => {
     expect(await screen.findByRole('link', { name: 'Administración' })).toHaveAttribute('href', '/admin')
     expect(await screen.findByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeInTheDocument()
   })
+
+  it('shows the storage notice inside the app layout only when storage is blocked', async () => {
+    sessionStorage.setItem('tiancy-crm:v1:access-unlocked', '1')
+    const { unmount } = render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>,
+    )
+    await screen.findByRole('heading', { level: 1, name: 'Pipeline comercial' })
+    expect(screen.queryByText(/bloqueando el almacenamiento local/)).not.toBeInTheDocument()
+    unmount()
+
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError')
+    })
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <App />
+      </MemoryRouter>,
+    )
+    expect(await screen.findByText(/bloqueando el almacenamiento local/)).toBeInTheDocument()
+    vi.restoreAllMocks()
+  })
 })

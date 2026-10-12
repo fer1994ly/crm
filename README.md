@@ -50,6 +50,7 @@ There is no backend and no external service:
 
 - **Data**: stored in the browser `localStorage` under the key `tiancy-crm:v1:clients`. On first load, 12 sample institutional clients are seeded across all stages.
 - **"Enviar cotización por correo" / "Enviar por WhatsApp"**: no message is sent; the action only records a simulated entry in the client's contact history.
+- **Blocked browser storage**: if the browser blocks `localStorage` (private mode, disabled site data), the app keeps working with in-memory storage and shows a visible, non-blocking notice on the login screen and inside the app: «Tu navegador está bloqueando el almacenamiento local: los cambios no se guardarán al cerrar o recargar la página.» Nothing is persisted in that state. The detection is `isBrowserStorageAvailable()` in `src/shared/storage/keyValueStorage.ts`.
 - **Access control**: a client-side demo password, not real security. The backend integration should replace it.
 
 ## Business information page (example data)

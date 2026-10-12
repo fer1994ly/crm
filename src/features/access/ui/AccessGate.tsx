@@ -1,5 +1,6 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { StorageNotice } from '../../../shared/ui/StorageNotice'
 import { browserStorage } from '../../../shared/storage/keyValueStorage'
 import { createAccessControl } from '../application/accessControl'
 import { ACCESS_PASSWORD } from '../domain/config'
@@ -41,6 +42,7 @@ export function AccessGate({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh px-4 py-10">
       <div className="mx-auto max-w-sm">
+        <StorageNotice />
         <p className="font-heading text-lg font-bold tracking-tight text-brand">Tiancy Médica</p>
         <h1 className="mt-4 text-2xl text-brand">Acceso</h1>
         <p className="mt-1 text-sm text-muted">Ingrese la clave de acceso para ver los contactos.</p>

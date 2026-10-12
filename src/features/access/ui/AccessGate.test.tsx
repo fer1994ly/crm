@@ -42,6 +42,20 @@ describe('AccessGate', () => {
     expect(localStorage.getItem(CLIENTS_STORAGE_KEY)).toBeNull()
   })
 
+  it('shows no storage notice when storage works', () => {
+    renderAt('/')
+    expect(screen.queryByText(/bloqueando el almacenamiento local/)).not.toBeInTheDocument()
+  })
+
+  it('warns on the login screen when the browser blocks storage', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('blocked', 'SecurityError')
+    })
+    renderAt('/')
+    expect(screen.getByRole('status')).toHaveTextContent(/bloqueando el almacenamiento local/)
+    vi.restoreAllMocks()
+  })
+
   it('shows the demo password hint', () => {
     renderAt('/')
     expect(screen.getByText('Clave de demostración: tiancy2026')).toBeInTheDocument()

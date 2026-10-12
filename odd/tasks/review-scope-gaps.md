@@ -28,7 +28,7 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 ## Tasks
 - [x] T13 Admin panel at /admin: list all contacts, edit, delete — route: delegated (writer trigger: 2+ non-trivial files)
 - [x] T14 Business info page with Maps link and social networks; README marks example data — route: delegated
-- [ ] T15 Visible notice when localStorage is blocked — route: delegated
+- [x] T15 Visible notice when localStorage is blocked — route: delegated
 
 ## Acceptance criteria
 - `/admin` asks for the password on a fresh session, then lists every contact from every stage.
@@ -51,5 +51,10 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 - Checks: lint clean, typecheck clean, `npm test` 138 passed, `npm run test:e2e` 108 passed (3 projects), build OK, no console.log.
 - Decisions: public page has its own minimal header ("Ir al CRM" link) instead of the CRM Layout; all facts (address, phone, hours, socials) are invented example data.
 
+### T15 (delegated writer)
+- RED: `keyValueStorage.test.ts` (canUseStorage / isBrowserStorageAvailable not exported, 4 failures), `StorageNotice.test.tsx` (module missing), `AccessGate.test.tsx > warns on the login screen when the browser blocks storage` and `App.test.tsx > shows the storage notice inside the app layout...` failed. E2E written after the implementation (no separate RED run).
+- GREEN: `canUseStorage(target)` (injectable, testable with a failing storage) and `isBrowserStorageAvailable(kind)`; `browserStorage` reuses them (port unchanged); `StorageNotice` (role="status", amber, non-blocking) on the login screen and in `Layout`. README documents the limitation.
+- Checks: lint clean, typecheck clean, `npm test` 147 passed, `npm run test:e2e` 117 passed (3 projects, localStorage blocked via `addInitScript`), build OK, no console.log.
+
 ## Next step
-T15.
+All three tasks done on `feat/review-scope-gaps`; native review assessment per work-unit commit and push/PR are the user's call (single-pr strategy).

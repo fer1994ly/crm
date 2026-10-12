@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { StorageNotice } from './StorageNotice'
 import { AccountMenu } from '../../features/access/ui/AccountMenu'
 
 const links = [
@@ -58,6 +59,7 @@ export function Layout() {
         </div>
       </header>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <StorageNotice />
         {notice && (
           <p role="status" className="mb-3 rounded-md bg-accent/25 px-3 py-2 text-sm font-medium text-brand-dark">
             {notice}
