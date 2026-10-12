@@ -56,5 +56,10 @@ Reviewer feedback (2026-10-12): the core works, but the brief also asks for (1) 
 - GREEN: `canUseStorage(target)` (injectable, testable with a failing storage) and `isBrowserStorageAvailable(kind)`; `browserStorage` reuses them (port unchanged); `StorageNotice` (role="status", amber, non-blocking) on the login screen and in `Layout`. README documents the limitation.
 - Checks: lint clean, typecheck clean, `npm test` 147 passed, `npm run test:e2e` 117 passed (3 projects, localStorage blocked via `addInitScript`), build OK, no console.log.
 
+### Review slice T13-T15
+- Parent spot check: `npm test` 147/147, console grep empty.
+- RDD assess base 1a58132 committed-only: medium, review_due (slice_budget_reached, 1384 lines). User granted; review-reliability approved, acknowledged, authority burned (lineage review-d9014b59a162fa2d).
+- Advisory (non-blocking): R3-app-layout-notice-test-vacuous (WARNING, src/App.test.tsx:31-40); R3-delete-result-ignored (AdminPage.tsx:158-161), R3-edit-notfound-silently-dropped (AdminPage.tsx:92-93), R3-inline-restore-mocks-leak (AccessGate.test.tsx:51-56) (SUGGESTION).
+
 ## Next step
-All three tasks done on `feat/review-scope-gaps`; native review assessment per work-unit commit and push/PR are the user's call (single-pr strategy).
+Push `feat/review-scope-gaps` and open a PR (user decision). Optional advisory follow-ups above.
