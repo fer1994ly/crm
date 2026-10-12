@@ -15,11 +15,6 @@ async function renderUnlocked() {
 }
 
 describe('AccountMenu', () => {
-  it('has no separate Administración tab', async () => {
-    await renderUnlocked()
-    expect(screen.queryByRole('link', { name: 'Administración' })).not.toBeInTheDocument()
-  })
-
   it('opens and closes with Escape, returning focus to the trigger', async () => {
     const user = userEvent.setup()
     await renderUnlocked()

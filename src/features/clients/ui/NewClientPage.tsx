@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getClientRepository } from '../../../app/repositories'
 import { createClient } from '../application/createClient'
+import { CLIENT_FIELDS, ClientFormFields } from './ClientFormFields'
 import type { NewClientErrors, NewClientField, NewClientInput } from '../domain/newClient'
 
 const EMPTY: NewClientInput = {
@@ -13,26 +14,6 @@ const EMPTY: NewClientInput = {
   quantity: '',
   estimatedValue: '',
 }
-
-interface FieldConfig {
-  name: NewClientField
-  label: string
-  required: boolean
-  type?: string
-  inputMode?: 'numeric' | 'tel' | 'email'
-  autoComplete?: string
-  hint?: string
-}
-
-const FIELDS: FieldConfig[] = [
-  { name: 'institution', label: 'Institución', required: true, autoComplete: 'organization' },
-  { name: 'contactName', label: 'Persona de contacto', required: true, autoComplete: 'name' },
-  { name: 'phone', label: 'Teléfono', required: false, type: 'tel', inputMode: 'tel', autoComplete: 'tel', hint: 'Teléfono o correo: al menos uno es obligatorio.' },
-  { name: 'email', label: 'Correo electrónico', required: false, type: 'email', inputMode: 'email', autoComplete: 'email' },
-  { name: 'product', label: 'Producto de interés', required: true },
-  { name: 'quantity', label: 'Cantidad', required: true, inputMode: 'numeric' },
-  { name: 'estimatedValue', label: 'Valor estimado (₡, opcional)', required: false, inputMode: 'numeric' },
-]
 
 export function NewClientPage() {
   const navigate = useNavigate()
@@ -48,7 +29,7 @@ export function NewClientPage() {
       return
     }
     setErrors(result.errors)
-    const first = FIELDS.find((f) => result.errors[f.name])
+    const first = CLIENT_FIELDS.find((f) => result.errors[f.name])
     if (first) refs.current[first.name]?.focus()
   }
 
@@ -62,43 +43,15 @@ export function NewClientPage() {
         El cliente se crea en la etapa «Nuevo contacto». Los campos con * son obligatorios.
       </p>
       <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4 rounded-lg border border-line bg-surface p-4">
-        {FIELDS.map((f) => {
-          const error = errors[f.name]
-          const id = `campo-${f.name}`
-          return (
-            <div key={f.name}>
-              <label htmlFor={id} className="block text-sm font-medium">
-                {f.label}
-                {f.required && <span aria-hidden="true"> *</span>}
-              </label>
-              <input
-                id={id}
-                ref={(el) => {
-                  refs.current[f.name] = el
-                }}
-                type={f.type ?? 'text'}
-                inputMode={f.inputMode}
-                autoComplete={f.autoComplete}
-                required={f.required}
-                value={values[f.name]}
-                onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))}
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? `${id}-error` : f.hint ? `${id}-hint` : undefined}
-                className={`mt-1 min-h-11 w-full rounded-md border p-2 text-base ${error ? 'border-red-700' : 'border-line'}`}
-              />
-              {f.hint && !error && (
-                <p id={`${id}-hint`} className="mt-1 text-xs text-muted">
-                  {f.hint}
-                </p>
-              )}
-              {error && (
-                <p id={`${id}-error`} className="mt-1 text-sm font-medium text-red-700">
-                  {error}
-                </p>
-              )}
-            </div>
-          )
-        })}
+        <ClientFormFields
+          idPrefix="campo"
+          values={values}
+          errors={errors}
+          onChange={(name, value) => setValues((v) => ({ ...v, [name]: value }))}
+          registerRef={(name, el) => {
+            refs.current[name] = el
+          }}
+        />
         <button
           type="submit"
           className="min-h-11 w-full rounded-md bg-brand px-4 text-sm font-semibold text-white hover:bg-brand-dark"

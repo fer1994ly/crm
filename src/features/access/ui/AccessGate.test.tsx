@@ -60,11 +60,11 @@ describe('AccessGate', () => {
     expect(await screen.findByRole('heading', { level: 1, name: /Hospital Metropolitano/ })).toBeInTheDocument()
   })
 
-  it('sends /admin to the board once unlocked', async () => {
+  it('lands on the admin panel when /admin was requested', async () => {
     const user = userEvent.setup()
     renderAt('/admin')
     await unlock(user)
-    expect(await screen.findByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { level: 1, name: 'Administración' })).toBeInTheDocument()
   })
 
   it('renders directly when the session is already unlocked', async () => {

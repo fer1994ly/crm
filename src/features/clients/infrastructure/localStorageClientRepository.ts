@@ -51,6 +51,13 @@ export function createLocalStorageClientRepository(
       else all[index] = client
       write(all)
     },
+    remove(id) {
+      const all = read()
+      const remaining = all.filter((c) => c.id !== id)
+      if (remaining.length === all.length) return false
+      write(remaining)
+      return true
+    },
     resetToSeed() {
       write(createSeedClients())
     },

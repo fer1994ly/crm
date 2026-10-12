@@ -12,7 +12,7 @@ describe('App shell', () => {
     )
     expect(await screen.findByText('Tiancy Médica')).toBeInTheDocument()
     expect(await screen.findByRole('link', { name: 'Nuevo cliente' })).toHaveAttribute('href', '/clientes/nuevo')
-    expect(screen.queryByRole('link', { name: 'Administración' })).not.toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'Administración' })).toHaveAttribute('href', '/admin')
     expect(await screen.findByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeInTheDocument()
   })
 })

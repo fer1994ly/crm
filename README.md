@@ -27,7 +27,7 @@ npm run dev        # http://localhost:5173
 
 ## Access screen and demo password
 
-The whole CRM sits behind an access screen: on any route (board, client detail, new client) nothing is shown, and no contact is read from storage, until the access password is entered. After unlocking you land on the page you asked for (deep links work).
+The whole CRM sits behind an access screen: on any route (board, client detail, new client, admin) nothing is shown, and no contact is read from storage, until the access password is entered. After unlocking you land on the page you asked for (deep links work).
 
 - **Demo password**: `tiancy2026`. It is also printed on the login screen ("Clave de demostración").
 - **Where it is configured**: `ACCESS_PASSWORD` in `src/features/access/domain/config.ts` (single constant).
@@ -40,6 +40,7 @@ The whole CRM sits behind an access screen: on any route (board, client detail, 
 - **Tablero** (`/`): pipeline by stage. On mobile, stage tabs with counts; on desktop, five columns.
 - **Ficha del cliente** (`/clientes/:id`): data, contact history, add a note, advance stage, simulated contact actions.
 - **Nuevo cliente** (`/clientes/nuevo`): creation form; it does not submit while a required field is missing.
+- **Administración** (`/admin`, behind the access password): every contact of every stage as cards. **Editar** reuses the creation validation (required fields, quantity, phone/email format) and keeps stage and history; **Eliminar** asks for an in-page confirmation and removes the contact (history included) from storage.
 - **Cuenta** (header menu): **Restablecer datos de ejemplo** (with an in-page confirmation) and **Cerrar sesión**.
 
 ## What is simulated

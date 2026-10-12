@@ -5,13 +5,6 @@ test.beforeEach(async ({ page }) => {
   await resetAndUnlock(page, '/')
 })
 
-test('the Administración tab is gone and /admin goes to the board', async ({ page }) => {
-  await expect(page.getByRole('link', { name: 'Administración' })).toHaveCount(0)
-  await page.goto('/admin')
-  await expect(page.getByRole('heading', { level: 1, name: 'Pipeline comercial' })).toBeVisible()
-  await expect(page).toHaveURL(/\/$/)
-})
-
 test('the open menu is fully visible, has 44px targets and causes no horizontal overflow', async ({ page }) => {
   await openAccountMenu(page)
   const viewport = page.viewportSize()!

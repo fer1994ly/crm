@@ -31,6 +31,15 @@ describe('localStorage client repository', () => {
     expect(repo.list()).toHaveLength(13)
   })
 
+  it('removes a client and reports whether it existed', () => {
+    const storage = createMemoryStorage()
+    const repo = createLocalStorageClientRepository(storage)
+    const id = repo.list()[0].id
+    expect(repo.remove(id)).toBe(true)
+    expect(repo.remove(id)).toBe(false)
+    expect(createLocalStorageClientRepository(storage).list()).toHaveLength(11)
+  })
+
   it('reseeds when stored data is corrupt', () => {
     const storage = createMemoryStorage()
     storage.setItem(CLIENTS_STORAGE_KEY, '{not json')

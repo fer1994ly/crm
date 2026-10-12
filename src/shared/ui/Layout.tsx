@@ -5,6 +5,7 @@ import { AccountMenu } from '../../features/access/ui/AccountMenu'
 const links = [
   { to: '/', label: 'Pipeline', end: true },
   { to: '/clientes/nuevo', label: 'Nuevo cliente', end: false },
+  { to: '/admin', label: 'Administración', end: false },
 ]
 
 export function Layout() {
@@ -34,7 +35,7 @@ export function Layout() {
             </svg>
             <span className="font-heading text-lg font-bold tracking-tight">Tiancy Médica</span>
           </div>
-          <nav aria-label="Principal" className="order-3 -mx-2 flex w-full gap-1 sm:order-2 sm:ml-auto sm:w-auto">
+          <nav aria-label="Principal" className="order-3 -mx-2 flex w-full flex-wrap gap-1 sm:order-2 sm:ml-auto sm:w-auto">
             {links.map((l) => (
               <NavLink
                 key={l.to}

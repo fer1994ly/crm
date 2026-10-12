@@ -14,6 +14,10 @@ const NewClientPage = lazy(() =>
   import('./features/clients/ui/NewClientPage').then((m) => ({ default: m.NewClientPage })),
 )
 
+const AdminPage = lazy(() =>
+  import('./features/clients/ui/AdminPage').then((m) => ({ default: m.AdminPage })),
+)
+
 /** Everything behind the access gate: loaded only after the password was accepted. */
 export default function AuthenticatedApp() {
   return (
@@ -22,6 +26,7 @@ export default function AuthenticatedApp() {
         <Route index element={<PipelineBoardPage />} />
         <Route path="clientes/nuevo" element={<NewClientPage />} />
         <Route path="clientes/:id" element={<ClientDetailPage />} />
+        <Route path="admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
